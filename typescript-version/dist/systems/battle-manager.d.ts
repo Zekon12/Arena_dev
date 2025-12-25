@@ -1,0 +1,36 @@
+import { Player } from '../models/player.js';
+import { Enemy } from '../models/enemy.js';
+import type { BattleState, DamageEvent, BattleResult, ReviveEvent, StageProgress } from '../types/game-types.js';
+export declare class BattleManager {
+    private player;
+    private currentStage;
+    private battleTimer;
+    private reviveTimer;
+    private state;
+    private playerNextAttack;
+    private enemyNextAttack;
+    onBattleResult: ((result: BattleResult) => void) | null;
+    onDamageDealt: ((event: DamageEvent) => void) | null;
+    onEnemyDefeated: ((enemy: Enemy) => void) | null;
+    onPlayerLevelUp: ((newLevel: number) => void) | null;
+    onPlayerRevive: ((event: ReviveEvent) => void) | null;
+    constructor(player: Player);
+    startStage(stageLevel: number): boolean;
+    private startNextBattle;
+    private startBattleLoop;
+    private processBattleTick;
+    private executeAttack;
+    private calculateDamage;
+    private getAttackInterval;
+    private finishBattle;
+    private handlePlayerDeath;
+    private startReviveCountdown;
+    private revivePlayer;
+    private handlePlayerVictory;
+    private completeStage;
+    getCurrentEnemy(): Enemy | null;
+    getStageProgress(): StageProgress | null;
+    getState(): BattleState;
+    stopBattle(): void;
+    resetStage(): void;
+}

@@ -1,0 +1,34 @@
+export declare class Game {
+    private player;
+    private battleManager;
+    private canvasRenderer;
+    private visualEffects;
+    private uiManager;
+    private updateInterval;
+    constructor();
+    private setupEventListeners;
+    private startUpdateLoop;
+    private updateLogic;
+    private startRenderLoop;
+    private updateUI;
+    private startBattle;
+    private stopBattle;
+    private nextStage;
+    private prevStage;
+    private updateStageButtons;
+    private handleBattleResult;
+    private handleDamageEvent;
+    private handleEnemyDefeated;
+    private handlePlayerLevelUp;
+    private handlePlayerRevive;
+    private showLevelUpDialog;
+    private allocateAttribute;
+    upgradeAttribute(attribute: string): void;
+    saveGame(): void;
+    private resetGame;
+    private upgradeAlchemy;
+    private collectAlchemy;
+    private checkOfflineRewards;
+    private showOfflineRewards;
+    private loadGame;
+}

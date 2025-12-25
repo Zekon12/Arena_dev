@@ -1,0 +1,19 @@
+// 游戏配置常量
+export const GAME_CONFIG = {
+    BASE_ATTACK_INTERVAL: 2000,
+    AGILITY_ATTACK_REDUCTION: 10,
+    MIN_ATTACK_INTERVAL: 500,
+    CRITICAL_DAMAGE_MULTIPLIER: 2,
+    ATTRIBUTE_POINTS_PER_LEVEL: 5,
+    BASE_EXP_REQUIREMENT: 100,
+    EXP_GROWTH_RATE: 1.14,
+    // 炼金炉配置
+    ALCHEMY_BASE_INTERVAL: 5000, // 基础5秒产生1金币
+    ALCHEMY_BASE_PRODUCTION: 1, // 基础产量
+    ALCHEMY_UPGRADE_COST_BASE: 10, // 升级基础费用
+    ALCHEMY_UPGRADE_COST_MULTIPLIER: 1.3, // 升级费用倍数
+    ALCHEMY_PRODUCTION_MULTIPLIER: 1.2, // 产量提升倍数
+    // 复活系统配置
+    REVIVE_TIME: 5000 // 复活时间5秒
+};
+//# sourceMappingURL=game-config.js.map

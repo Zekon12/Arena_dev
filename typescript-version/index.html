@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arena</title>
+    <link rel="stylesheet" href="../styles/main.css">
+    <style>
+        /* 强制确保网格布局 */
+        .game-main {
+            display: grid !important;
+            grid-template-columns: 300px 400px 400px !important;
+            grid-template-rows: auto !important;
+            gap: 15px !important;
+            min-height: 600px !important;
+            padding: 15px !important;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+        }
+
+        /* 额外的游戏样式 */
+        .boss-enemy {
+            color: #d32f2f !important;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(211, 47, 47, 0.5);
+        }
+
+        .notification {
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* 炼金炉样式 */
+        .alchemy-system {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border: 2px solid #ff9800;
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 15px;
+            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.15);
+        }
+
+        .alchemy-system h4 {
+            color: #f57c00;
+            margin-bottom: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            text-align: center;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .alchemy-info {
+            margin-bottom: 12px;
+        }
+
+        .alchemy-level,
+        .alchemy-production,
+        .alchemy-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #e65100;
+        }
+
+        .alchemy-progress {
+            margin: 10px 0;
+        }
+
+        .alchemy-progress label {
+            color: #f57c00;
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: block;
+            font-size: 11px;
+        }
+
+        .alchemy-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .alchemy-controls button {
+            font-size: 11px;
+            padding: 8px 12px;
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .alchemy-controls button:hover {
+            background: linear-gradient(135deg, #f57c00 0%, #ef6c00 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(255, 152, 0, 0.25);
+        }
+
+        .alchemy-controls button:disabled {
+            background: linear-gradient(135deg, #bdbdbd 0%, #9e9e9e 100%);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .offline-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            backdrop-filter: blur(5px);
+        }
+
+        .offline-content {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 450px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .offline-title {
+            font-size: 28px;
+            color: #ff9800;
+            margin-bottom: 20px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .offline-time {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+
+        .offline-rewards {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border: 2px solid #ff9800;
+        }
+
+        .offline-gold {
+            font-size: 36px;
+            color: #f57c00;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 属性升级按钮样式 */
+        .attr-btn {
+            width: 22px;
+            height: 22px;
+            border: none;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(76, 175, 80, 0.25);
+        }
+
+        .attr-btn:hover {
+            background: linear-gradient(135deg, #388e3c 0%, #2e7d32 100%);
+            transform: scale(1.1);
+            box-shadow: 0 3px 8px rgba(76, 175, 80, 0.35);
+        }
+
+        .attr-btn:disabled {
+            background: linear-gradient(135deg, #bdbdbd 0%, #9e9e9e 100%);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .attr-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* 复活状态样式 */
+        .reviving-status {
+            color: #ff9800 !important;
+            font-weight: bold;
+            animation: pulse 1s infinite;
+        }
+
+        .revive-message {
+            color: #4caf50;
+            font-weight: bold;
+            background: rgba(76, 175, 80, 0.1);
+            padding: 8px 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4caf50;
+        }
+
+        /* 可用属性点显示 */
+        #available-points {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border: 2px solid #ff9800;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            margin-top: 15px;
+            font-weight: 700;
+            color: #f57c00;
+            animation: pulse 2s infinite;
+        }
+
+        /* 关卡导航样式 */
+        .stage-navigation {
+            display: flex;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .stage-btn {
+            flex: 1;
+            padding: 8px 12px !important;
+            font-size: 12px !important;
+            background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%) !important;
+        }
+
+        .stage-btn:hover {
+            background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
+        }
+
+        .stage-btn:disabled {
+            background: linear-gradient(135deg, #bdbdbd 0%, #9e9e9e 100%) !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="game-container">
+        <!-- 游戏标题 -->
+        <header class="game-header">
+            <h1>Arena</h1>
+            <div class="game-stats">
+                <span id="player-level">Lv.1</span>
+                <span id="gold-display">💰 0</span>
+                <span id="diamond-display">💎 0</span>
+            </div>
+        </header>
+
+        <!-- 主游戏区域 -->
+        <main class="game-main">
+            <!-- 左侧角色信息面板 -->
+            <aside class="character-panel">
+                <div class="character-info">
+                    <h3>角色属性</h3>
+                    <div class="attribute-list">
+                        <div class="attribute-item">
+                            <span>生命值:</span>
+                            <div class="attribute-value">
+                                <span id="player-hp">100/100</span>
+                                <button class="attr-btn" id="upgrade-health-btn"
+                                    onclick="window.game.upgradeAttribute('health')" title="升级生命值 (1点)">+</button>
+                            </div>
+                        </div>
+                        <div class="attribute-item">
+                            <span>攻击力:</span>
+                            <div class="attribute-value">
+                                <span id="player-attack">10</span>
+                                <button class="attr-btn" id="upgrade-attack-btn"
+                                    onclick="window.game.upgradeAttribute('attack')" title="升级攻击力 (1点)">+</button>
+                            </div>
+                        </div>
+                        <div class="attribute-item">
+                            <span>防御力:</span>
+                            <div class="attribute-value">
+                                <span id="player-defense">5</span>
+                                <button class="attr-btn" id="upgrade-defense-btn"
+                                    onclick="window.game.upgradeAttribute('defense')" title="升级防御力 (1点)">+</button>
+                            </div>
+                        </div>
+                        <div class="attribute-item">
+                            <span>敏捷:</span>
+                            <div class="attribute-value">
+                                <span id="player-agility">8</span>
+                                <button class="attr-btn" id="upgrade-agility-btn"
+                                    onclick="window.game.upgradeAttribute('agility')" title="升级敏捷 (1点)">+</button>
+                            </div>
+                        </div>
+                        <div class="attribute-item">
+                            <span>幸运:</span>
+                            <div class="attribute-value">
+                                <span id="player-luck">3</span>
+                                <button class="attr-btn" id="upgrade-luck-btn"
+                                    onclick="window.game.upgradeAttribute('luck')" title="升级幸运 (1点)">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="experience-bar">
+                        <label>经验值:</label>
+                        <div class="progress-bar">
+                            <div id="exp-progress" class="progress-fill"></div>
+                        </div>
+                        <span id="exp-text">0/100</span>
+                    </div>
+
+                    <div id="available-points"
+                        style="display: none; color: #ffc107; font-weight: bold; margin-top: 10px;">
+                        可用属性点: 0
+                    </div>
+                </div>
+
+                <!-- 装备槽位 -->
+                <div class="equipment-slots">
+                    <h4>装备</h4>
+                    <div class="equipment-grid">
+                        <div class="equipment-slot" data-type="weapon">武器</div>
+                        <div class="equipment-slot" data-type="armor">护甲</div>
+                        <div class="equipment-slot" data-type="accessory">饰品</div>
+                        <div class="equipment-slot" data-type="boots">靴子</div>
+                    </div>
+                </div>
+
+                <!-- 炼金炉系统 -->
+                <div class="alchemy-system">
+                    <h4>🔥 炼金炉</h4>
+                    <div class="alchemy-info">
+                        <div class="alchemy-level">
+                            <span>等级: </span>
+                            <span id="alchemy-level">1</span>
+                        </div>
+                        <div class="alchemy-production">
+                            <span>产量: </span>
+                            <span id="alchemy-production">1金币/5秒</span>
+                        </div>
+                        <div class="alchemy-progress">
+                            <label>生产进度:</label>
+                            <div class="progress-bar">
+                                <div id="alchemy-progress" class="progress-fill"></div>
+                            </div>
+                            <span id="alchemy-time">0s</span>
+                        </div>
+                        <div class="alchemy-total">
+                            <span>总产出: </span>
+                            <span id="alchemy-total">0</span>
+                        </div>
+                    </div>
+                    <div class="alchemy-controls">
+                        <button id="upgrade-alchemy-btn" class="action-btn">
+                            升级炼金炉 (<span id="upgrade-cost">10</span>💰)
+                        </button>
+                        <button id="collect-alchemy-btn" class="action-btn">收集产出</button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- 中央战斗区域 -->
+            <section class="battle-area">
+                <div class="canvas-container">
+                    <canvas id="battle-canvas" width="400" height="300"></canvas>
+                    <canvas id="effects-canvas" class="canvas-overlay" width="400" height="300"></canvas>
+                </div>
+
+                <!-- 战斗信息显示 -->
+                <div class="battle-info">
+                    <div class="enemy-info">
+                        <span id="enemy-name">等待敌人...</span>
+                        <div class="enemy-hp-bar">
+                            <div id="enemy-hp-progress" class="progress-fill"></div>
+                        </div>
+                        <span id="enemy-hp-text">-/-</span>
+                    </div>
+                </div>
+
+                <!-- 战斗日志 -->
+                <div class="battle-log">
+                    <div id="battle-messages"></div>
+                </div>
+            </section>
+
+            <!-- 右侧信息和控制面板 -->
+            <aside class="control-panel">
+                <div class="stage-info">
+                    <h4>当前关卡</h4>
+                    <span id="current-stage">第1关 - 新手村</span>
+                    <div class="stage-progress">
+                        <div id="stage-progress-fill" class="stage-progress-fill"></div>
+                    </div>
+                    <div class="stage-progress">
+                        <span id="enemies-defeated">0/11</span>
+                        <span>敌人击败</span>
+                    </div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="action-buttons">
+                    <button id="start-battle-btn" class="action-btn">开始战斗</button>
+                    <button id="stop-battle-btn" class="action-btn">停止战斗</button>
+                    <button id="level-up-btn" class="action-btn" style="display: none;">升级属性</button>
+                    <div class="stage-navigation">
+                        <button id="prev-stage-btn" class="action-btn stage-btn">上一关</button>
+                        <button id="next-stage-btn" class="action-btn stage-btn">下一关</button>
+                    </div>
+                </div>
+
+                <!-- 快速操作 -->
+                <div class="quick-actions">
+                    <button id="save-btn" class="quick-btn">保存游戏</button>
+                    <button id="reset-btn" class="quick-btn">重置进度</button>
+                </div>
+
+                <!-- 战斗状态 -->
+                <div class="stat-card" style="margin-top: 15px;">
+                    <div class="stat-title">战斗状态</div>
+                    <div class="stat-value" id="battle-status">空闲</div>
+                </div>
+            </aside>
+        </main>
+
+        <!-- 底部状态栏 -->
+        <footer class="game-footer">
+            <div class="status-info">
+                <span id="game-status">游戏已加载 - 点击开始战斗！</span>
+                <span id="auto-save-status">自动保存: 开启</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 模态对话框容器 -->
+    <div id="modal-container"></div>
+
+    <!-- TypeScript 编译后的 JavaScript 模块 -->
+    <script type="module" src="dist/main.js"></script>
+</body>
+
+</html>

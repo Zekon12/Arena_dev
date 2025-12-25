@@ -1,0 +1,33 @@
+import type { Attributes, AlchemyFurnace, Character } from '../types/game-types.js';
+export declare class Player implements Character {
+    id: string;
+    name: string;
+    level: number;
+    experience: number;
+    availablePoints: number;
+    gold: number;
+    diamonds: number;
+    currentStage: number;
+    attributes: Attributes;
+    alchemyFurnace: AlchemyFurnace;
+    constructor();
+    getRequiredExp(): number;
+    canLevelUp(): boolean;
+    levelUp(): boolean;
+    allocateAttribute(attribute: keyof Attributes, points: number): boolean;
+    gainExperience(amount: number): void;
+    gainGold(amount: number): void;
+    getAlchemyProductionRate(): number;
+    getAlchemyInterval(): number;
+    getAlchemyUpgradeCost(): number;
+    canUpgradeAlchemy(): boolean;
+    upgradeAlchemy(): boolean;
+    collectAlchemyProduction(): number;
+    getOfflineProduction(offlineTime: number): number;
+    getNextProductionTime(): number;
+    takeDamage(damage: number): void;
+    isDead(): boolean;
+    revive(): void;
+    toJSON(): any;
+    fromJSON(data: any): void;
+}
