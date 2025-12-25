@@ -52,8 +52,8 @@ export class Enemy implements Character {
     }
 
     private calculateRewards(): Rewards {
-        const baseExp = 100 + this.stageLevel * 200;
-        const baseGold = 50 + this.stageLevel * 300;
+        const baseExp = 100 + Math.pow(this.stageLevel, 1.4) * 200;
+        const baseGold = 50 + Math.pow(this.stageLevel, 1.4) * 300;
         
         let rewards: Rewards = {
             experience: baseExp,

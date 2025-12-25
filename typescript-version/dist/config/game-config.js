@@ -12,7 +12,7 @@ export const GAME_CONFIG = {
     ALCHEMY_BASE_PRODUCTION: 1, // 基础产量
     ALCHEMY_UPGRADE_COST_BASE: 10, // 升级基础费用
     ALCHEMY_UPGRADE_COST_MULTIPLIER: 1.3, // 升级费用倍数
-    ALCHEMY_PRODUCTION_MULTIPLIER: 1.2, // 产量提升倍数
+    ALCHEMY_PRODUCTION_MULTIPLIER: 2, // 产量提升倍数
     // 复活系统配置
     REVIVE_TIME: 5000 // 复活时间5秒
 };

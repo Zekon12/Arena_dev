@@ -43,8 +43,6 @@ export class Game {
         
         // 初始化UI
         this.updateUI();
-        
-        console.log('🎮 完整游戏系统初始化完成！');
     }
 
     private setupEventListeners(): void {
@@ -341,11 +339,20 @@ export class Game {
                     text: '确定重置', 
                     action: () => {
                         localStorage.removeItem('idle_game_save');
-                        location.reload();
+                        this.uiManager.showNotification('游戏进度已重置！页面将刷新...', 'success');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
                     },
                     type: 'primary'
                 },
-                { text: '取消', action: () => {}, type: 'secondary' }
+                { 
+                    text: '取消', 
+                    action: () => {
+                        this.uiManager.showNotification('重置已取消', 'info');
+                    }, 
+                    type: 'secondary' 
+                }
             ]
         );
     }
@@ -450,7 +457,6 @@ export class Game {
                     // 更新最后生产时间
                     this.player.alchemyFurnace.lastProductionTime = Date.now();
                 }
-                console.log('游戏数据加载成功');
             } catch (error) {
                 console.error('加载游戏数据失败:', error);
             }

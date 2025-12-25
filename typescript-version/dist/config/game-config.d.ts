@@ -10,6 +10,6 @@ export declare const GAME_CONFIG: {
     readonly ALCHEMY_BASE_PRODUCTION: 1;
     readonly ALCHEMY_UPGRADE_COST_BASE: 10;
     readonly ALCHEMY_UPGRADE_COST_MULTIPLIER: 1.3;
-    readonly ALCHEMY_PRODUCTION_MULTIPLIER: 1.2;
+    readonly ALCHEMY_PRODUCTION_MULTIPLIER: 2;
     readonly REVIVE_TIME: 5000;
 };

@@ -129,7 +129,7 @@ export class BattleManager {
 
     private calculateDamage(attacker: Character, defender: Character): { damage: number; isCritical: boolean } {
         const baseDamage = Math.max(1, attacker.attributes.attack - defender.attributes.defense);
-        const criticalChance = attacker.attributes.luck / 100;
+        const criticalChance = attacker.attributes.luck / 200;
         const isCritical = Math.random() < criticalChance;
         
         return {

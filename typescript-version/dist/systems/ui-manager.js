@@ -109,14 +109,123 @@ export class UIManager {
     }
     showNotification(message, type = 'info') {
         // 简化的通知实现
-        console.log(`[${type.toUpperCase()}] ${message}`);
         this.addBattleMessage(message, type);
     }
     showModal(title, content, buttons) {
-        // 简化的模态框实现
-        const result = confirm(`${title}\n\n${content}`);
-        if (result && buttons.length > 0) {
-            buttons[0].action();
+        try {
+            // 创建模态框容器
+            const modalContainer = document.getElementById('modal-container') || document.body;
+            // 创建模态框
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                backdrop-filter: blur(5px);
+            `;
+            // 创建模态框内容
+            const modalContent = document.createElement('div');
+            modalContent.className = 'modal-content';
+            modalContent.style.cssText = `
+                background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+                padding: 30px;
+                border-radius: 15px;
+                text-align: center;
+                max-width: 400px;
+                min-width: 300px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            `;
+            // 添加标题
+            const titleElement = document.createElement('h3');
+            titleElement.textContent = title;
+            titleElement.style.cssText = `
+                color: #333;
+                margin-bottom: 15px;
+                font-size: 20px;
+                font-weight: 700;
+            `;
+            // 添加内容
+            const contentElement = document.createElement('p');
+            contentElement.textContent = content;
+            contentElement.style.cssText = `
+                color: #666;
+                margin-bottom: 25px;
+                font-size: 16px;
+                line-height: 1.5;
+            `;
+            // 添加按钮容器
+            const buttonContainer = document.createElement('div');
+            buttonContainer.style.cssText = `
+                display: flex;
+                gap: 10px;
+                justify-content: center;
+            `;
+            // 创建按钮
+            buttons.forEach(buttonConfig => {
+                const button = document.createElement('button');
+                button.textContent = buttonConfig.text;
+                button.style.cssText = `
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    ${buttonConfig.type === 'primary'
+                    ? 'background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white;'
+                    : 'background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%); color: white;'}
+                `;
+                button.addEventListener('click', () => {
+                    try {
+                        buttonConfig.action();
+                        modal.remove();
+                    }
+                    catch (error) {
+                        console.error('Button action error:', error);
+                        modal.remove();
+                    }
+                });
+                button.addEventListener('mouseenter', () => {
+                    button.style.transform = 'translateY(-2px)';
+                    button.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.2)';
+                });
+                button.addEventListener('mouseleave', () => {
+                    button.style.transform = 'translateY(0)';
+                    button.style.boxShadow = 'none';
+                });
+                buttonContainer.appendChild(button);
+            });
+            // 组装模态框
+            modalContent.appendChild(titleElement);
+            modalContent.appendChild(contentElement);
+            modalContent.appendChild(buttonContainer);
+            modal.appendChild(modalContent);
+            // 添加到页面
+            modalContainer.appendChild(modal);
+            // 点击背景关闭模态框
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+        catch (error) {
+            console.error('Error creating modal:', error);
+            // 降级到简单的confirm对话框
+            const result = confirm(`${title}\n\n${content}`);
+            if (result && buttons.length > 0) {
+                buttons[0].action();
+            }
         }
     }
     updateElement(id, content) {
