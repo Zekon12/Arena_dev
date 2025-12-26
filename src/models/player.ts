@@ -1,5 +1,5 @@
 import { GAME_CONFIG } from '../config/game-config.js';
-import type { Attributes, AlchemyFurnace, Character } from '../types/game-types.js';
+import type { Attributes, AlchemyFurnace, Character, States, Stance } from './interfaces/game-types.js';
 
 export class Player implements Character {
     public id: string = 'player';
@@ -11,17 +11,31 @@ export class Player implements Character {
     public diamonds: number = 0;
     public currentStage: number = 1;
     public attributes: Attributes;
+    public states: States;
     public alchemyFurnace: AlchemyFurnace;
 
     constructor() {
         this.attributes = {
-            health: 150,      // 提高初始生命值
-            maxHealth: 150,
-            attack: 25,       // 提高初始攻击力
-            defense: 8,       // 提高初始防御力
-            agility: 12,      // 提高初始敏捷
-            luck: 15          // 提高初始幸运
+            strength: 15,
+            agility: 12,
+            stamina:14,
+            basicHealth: 50
         };
+
+        this.states = {
+            health: 100,
+            maxHealth: 100,
+            minAttack: 15,
+            maxAttack: 20,
+            attackSpeed: 2.4,
+            criticalRate: 8,
+            criticalMultiplier: 2,
+            armor: 5,
+            blockSkill: 10,
+            blockValue: 3,
+            dougeSkill: 8,
+            parrySkill: 8,
+        }
         
         // 炼金炉系统
         this.alchemyFurnace = {
@@ -29,6 +43,26 @@ export class Player implements Character {
             lastProductionTime: Date.now(),
             totalProduced: 0
         };
+    }
+
+    updateState(): boolean {
+        const curHealth = this.states.health
+        this.states = {
+            health: curHealth,
+            maxHealth: GAME_CONFIG.BASIC_HEALTH + 10* this.attributes.stamina,
+            minAttack: Math.floor(5 + 0.9 * this.attributes.strength),
+            maxAttack: Math.floor(10 + 1.1 * this.attributes.strength),
+            attackSpeed: 2.4,
+            criticalRate: 8,
+            criticalMultiplier: 2,
+            armor: 5,
+            blockSkill: 10,
+            blockValue: 3,
+            dougeSkill: 8,
+            parrySkill: 8,
+
+        }
+        return true
     }
 
     getRequiredExp(): number {
@@ -48,7 +82,7 @@ export class Player implements Character {
         this.availablePoints += GAME_CONFIG.ATTRIBUTE_POINTS_PER_LEVEL;
         
         // 升级时增加属性
-        this.attributes.maxHealth += 20;
+        this.attributes.basicHealth += 10 * Math.pow(this.level, 1.1);
         this.attributes.health = this.attributes.maxHealth;
         this.attributes.attack += 3;
         this.attributes.defense += 2;
@@ -179,5 +213,32 @@ export class Player implements Character {
         if (data.alchemyFurnace) {
             this.alchemyFurnace = { ...data.alchemyFurnace };
         }
+    }
+
+    resetToDefault(): void {
+        // 重置玩家到初始状态
+        this.level = 1;
+        this.experience = 0;
+        this.availablePoints = 0;
+        this.gold = 0;
+        this.diamonds = 0;
+        this.currentStage = 1;
+        
+        // 重置属性到初始值
+        this.attributes = {
+            health: 150,
+            maxHealth: 150,
+            attack: 25,
+            defense: 8,
+            agility: 12,
+            luck: 15
+        };
+        
+        // 重置炼金炉到初始状态
+        this.alchemyFurnace = {
+            level: 1,
+            lastProductionTime: Date.now(),
+            totalProduced: 0
+        };
     }
 }

@@ -1,4 +1,4 @@
-import type { VisualEffect } from '../types/game-types.js';
+import type { VisualEffect } from '../models/interfaces/game-types.js';
 
 export class VisualEffects {
     private canvas: HTMLCanvasElement;
@@ -97,5 +97,10 @@ export class VisualEffects {
             duration: 2500,
             startTime: Date.now()
         });
+    }
+
+    clearAllEffects(): void {
+        this.effects = [];
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 }

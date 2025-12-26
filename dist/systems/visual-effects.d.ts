@@ -10,4 +10,5 @@ export declare class VisualEffects {
     createHitEffect(x: number, y: number): void;
     createLevelUpEffect(x: number, y: number): void;
     createReviveEffect(x: number, y: number): void;
+    clearAllEffects(): void;
 }

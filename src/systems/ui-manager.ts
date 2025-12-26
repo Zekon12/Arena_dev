@@ -1,6 +1,6 @@
 import { Player } from '../models/player.js';
 import { Enemy } from '../models/enemy.js';
-import type { BattleState, MessageType } from '../types/game-types.js';
+import type { BattleState, MessageType } from '../models/interfaces/game-types.js';
 
 export class UIManager {
     private messageContainer: HTMLElement | null;

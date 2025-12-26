@@ -30,4 +30,5 @@ export declare class Player implements Character {
     revive(): void;
     toJSON(): any;
     fromJSON(data: any): void;
+    resetToDefault(): void;
 }

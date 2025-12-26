@@ -10,12 +10,12 @@ import type {
     Character 
 } from '../models/interfaces/game-types.js';
 
-interface Stage {
-    stageLevel: number;
-    enemies: Enemy[];
-    currentEnemyIndex: number;
-    enemiesDefeated: number;
-    isCompleted: boolean;
+
+export class CharacterManager {
+    updateState(): boolean {
+
+        return true
+    }
 }
 
 export class BattleManager {

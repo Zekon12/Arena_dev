@@ -20,6 +20,8 @@ export class BattleManager {
         if (this.state !== 'idle') {
             return false;
         }
+        // 确保清理所有定时器
+        this.stopBattle();
         // 生成敌人
         const enemies = [];
         for (let i = 0; i < 15; i++) {
@@ -40,6 +42,11 @@ export class BattleManager {
     startNextBattle() {
         if (!this.currentStage)
             return;
+        // 确保清理之前的定时器
+        if (this.battleTimer) {
+            clearInterval(this.battleTimer);
+            this.battleTimer = null;
+        }
         const stage = this.currentStage;
         if (stage.currentEnemyIndex >= stage.enemies.length) {
             this.completeStage();
@@ -53,10 +60,27 @@ export class BattleManager {
         this.startBattleLoop(currentEnemy);
     }
     startBattleLoop(enemy) {
+        // 确保清理之前的战斗定时器
+        if (this.battleTimer) {
+            clearInterval(this.battleTimer);
+            this.battleTimer = null;
+        }
+        // 检查状态是否正确
+        if (this.state !== 'fighting') {
+            return;
+        }
         const now = Date.now();
         this.playerNextAttack = now + this.getAttackInterval(this.player);
         this.enemyNextAttack = now + this.getAttackInterval(enemy);
         this.battleTimer = window.setInterval(() => {
+            // 再次检查状态，防止异常情况
+            if (this.state !== 'fighting') {
+                if (this.battleTimer) {
+                    clearInterval(this.battleTimer);
+                    this.battleTimer = null;
+                }
+                return;
+            }
             this.processBattleTick(enemy);
         }, 100);
     }
@@ -146,6 +170,11 @@ export class BattleManager {
         showCountdown();
     }
     revivePlayer(enemy) {
+        // 清理复活定时器
+        if (this.reviveTimer) {
+            clearTimeout(this.reviveTimer);
+            this.reviveTimer = null;
+        }
         // 复活玩家
         this.player.revive();
         // 重置敌人生命值
@@ -156,10 +185,10 @@ export class BattleManager {
         if (this.onPlayerRevive) {
             this.onPlayerRevive({ type: 'revived' });
         }
-        // 重新开始战斗
-        this.state = 'idle';
+        // 重新开始战斗 - 设置正确的状态
+        this.state = 'fighting';
         setTimeout(() => {
-            if (enemy && this.currentStage) {
+            if (enemy && this.currentStage && this.state === 'fighting') {
                 this.startBattleLoop(enemy);
             }
         }, 1000);

@@ -81,5 +81,9 @@ export class VisualEffects {
             startTime: Date.now()
         });
     }
+    clearAllEffects() {
+        this.effects = [];
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
 }
 //# sourceMappingURL=visual-effects.js.map

@@ -26,6 +26,8 @@ export declare class Game {
     upgradeAttribute(attribute: string): void;
     saveGame(): void;
     private resetGame;
+    private performCompleteReset;
+    private setupBattleManagerEvents;
     private upgradeAlchemy;
     private collectAlchemy;
     private checkOfflineRewards;

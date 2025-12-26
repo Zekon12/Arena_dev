@@ -1,4 +1,4 @@
-import type { Character, Position } from '../types/game-types.js';
+import type { Character, Position } from '../models/interfaces/game-types.js';
 
 export class CanvasRenderer {
     private canvas: HTMLCanvasElement;

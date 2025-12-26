@@ -1,12 +1,32 @@
 // 游戏类型定义
 
-export interface Attributes {
+export interface States{
     health: number;
     maxHealth: number;
-    attack: number;
-    defense: number;
+    minAttack: number,
+    maxAttack: number;
+    attackSpeed: number;
+    criticalRate: number;
+    criticalMultiplier: number;
+    armor: number;
+    blockSkill: number,
+    blockValue: number,
+    dougeSkill: number,
+    parrySkill: number,
+    // stance: Stance
+}
+
+export enum Stance {
+    Aggresive,
+    Balance,
+    Defensive
+}
+
+export interface Attributes {
+    strength: number;
     agility: number;
-    luck: number;
+    stamina: number;
+    basicHealth: number;
 }
 
 export interface AlchemyFurnace {
@@ -65,7 +85,9 @@ export interface Character {
     id: string;
     name: string;
     level: number;
+    states: States;
     attributes: Attributes;
+    updateState(): void;
     takeDamage(damage: number): void;
     isDead(): boolean;
 }

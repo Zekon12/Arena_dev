@@ -3,7 +3,7 @@ import { BattleManager } from './systems/battle-manager.js';
 import { CanvasRenderer } from './systems/canvas-renderer.js';
 import { VisualEffects } from './systems/visual-effects.js';
 import { UIManager } from './systems/ui-manager.js';
-import type { DamageEvent, BattleResult, ReviveEvent } from './types/game-types.js';
+import type { DamageEvent, BattleResult, ReviveEvent } from './models/interfaces/game-types.js';
 
 export class Game {
     private player: Player;
@@ -333,16 +333,12 @@ export class Game {
     private resetGame(): void {
         this.uiManager.showModal(
             '重置游戏',
-            '确定要重置所有进度吗？此操作不可撤销！',
+            '确定要重置所有进度吗？此操作将清除所有数据，包括角色等级、金币、炼金炉等级、关卡进度等，无法撤销！',
             [
                 { 
                     text: '确定重置', 
                     action: () => {
-                        localStorage.removeItem('idle_game_save');
-                        this.uiManager.showNotification('游戏进度已重置！页面将刷新...', 'success');
-                        setTimeout(() => {
-                            location.reload();
-                        }, 1000);
+                        this.performCompleteReset();
                     },
                     type: 'primary'
                 },
@@ -355,6 +351,59 @@ export class Game {
                 }
             ]
         );
+    }
+
+    private performCompleteReset(): void {
+        try {
+            // 1. 停止所有战斗和定时器
+            this.battleManager.stopBattle();
+            this.battleManager.resetStage();
+            
+            // 2. 清除更新循环
+            if (this.updateInterval) {
+                clearInterval(this.updateInterval);
+                this.updateInterval = null;
+            }
+            
+            // 3. 清理渲染器和视觉效果
+            this.canvasRenderer.clearBattle();
+            this.visualEffects.clearAllEffects();
+            
+            // 4. 删除存档数据
+            localStorage.removeItem('idle_game_save');
+            
+            // 5. 重置玩家数据到初始状态
+            this.player.resetToDefault();
+            
+            // 6. 重置战斗管理器
+            this.battleManager = new BattleManager(this.player);
+            this.setupBattleManagerEvents();
+            
+            // 7. 重新启动更新循环
+            this.startUpdateLoop();
+            
+            // 8. 更新UI显示
+            this.updateUI();
+            
+            this.uiManager.showNotification('游戏已完全重置！所有数据已清除，重新开始冒险吧！', 'success');
+            
+        } catch (error) {
+            console.error('重置游戏时出错:', error);
+            // 如果重置过程出错，降级到页面刷新
+            this.uiManager.showNotification('重置过程出错，将刷新页面...', 'warning');
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        }
+    }
+
+    private setupBattleManagerEvents(): void {
+        // 重新设置战斗管理器事件
+        this.battleManager.onBattleResult = (result) => this.handleBattleResult(result);
+        this.battleManager.onDamageDealt = (event) => this.handleDamageEvent(event);
+        this.battleManager.onEnemyDefeated = (enemy) => this.handleEnemyDefeated(enemy);
+        this.battleManager.onPlayerLevelUp = (newLevel) => this.handlePlayerLevelUp(newLevel);
+        this.battleManager.onPlayerRevive = (event) => this.handlePlayerRevive(event);
     }
 
     // 炼金炉相关方法

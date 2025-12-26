@@ -1,4 +1,4 @@
-import type { Attributes, Rewards, Character } from '../types/game-types.js';
+import type { Attributes, Rewards, Character } from './interfaces/game-types.js';
 
 export class Enemy implements Character {
     public id: string;
@@ -52,8 +52,8 @@ export class Enemy implements Character {
     }
 
     private calculateRewards(): Rewards {
-        const baseExp = 100 + Math.pow(this.stageLevel, 1.4) * 200;
-        const baseGold = 50 + Math.pow(this.stageLevel, 1.4) * 300;
+        const baseExp = Math.round(10 + Math.pow(this.stageLevel, 1.3) * 10);
+        const baseGold = Math.round(10 + Math.pow(this.stageLevel, 1.3) * 12);
         
         let rewards: Rewards = {
             experience: baseExp,

@@ -149,5 +149,29 @@ export class Player {
             this.alchemyFurnace = { ...data.alchemyFurnace };
         }
     }
+    resetToDefault() {
+        // 重置玩家到初始状态
+        this.level = 1;
+        this.experience = 0;
+        this.availablePoints = 0;
+        this.gold = 0;
+        this.diamonds = 0;
+        this.currentStage = 1;
+        // 重置属性到初始值
+        this.attributes = {
+            health: 150,
+            maxHealth: 150,
+            attack: 25,
+            defense: 8,
+            agility: 12,
+            luck: 15
+        };
+        // 重置炼金炉到初始状态
+        this.alchemyFurnace = {
+            level: 1,
+            lastProductionTime: Date.now(),
+            totalProduced: 0
+        };
+    }
 }
 //# sourceMappingURL=player.js.map

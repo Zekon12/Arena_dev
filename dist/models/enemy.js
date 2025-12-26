@@ -35,8 +35,8 @@ export class Enemy {
         return attributes;
     }
     calculateRewards() {
-        const baseExp = 100 + Math.pow(this.stageLevel, 1.4) * 200;
-        const baseGold = 50 + Math.pow(this.stageLevel, 1.4) * 300;
+        const baseExp = 10 + Math.pow(this.stageLevel, 1.3) * 10;
+        const baseGold = 10 + Math.pow(this.stageLevel, 1.3) * 12;
         let rewards = {
             experience: baseExp,
             gold: baseGold,
